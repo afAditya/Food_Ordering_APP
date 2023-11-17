@@ -1,15 +1,19 @@
-import RestrauntCard from "./RestrauntCard";
-import { useState, useEffect } from "react";
+import RestrauntCard, { withPromotedLabel } from "./RestrauntCard";
+import { useState, useEffect, useContext } from "react";
 import Shimmer from "./Shimmer";
 import { Link } from "react-router-dom";
 import useOnlineStatus from "../utils/useOnlineStatus";
 import useRestrauntData from "../utils/useRestrauntData";
+import UserContext from "../utils/UserContext";
 
 const Body = () => {
   const [restrauntList, setRestrauntList] = useRestrauntData();
   const [searchText, setSearchText] = useState("");
   const [newResList, setNewResList] = useRestrauntData();
   const onlineStatus = useOnlineStatus();
+  const RestrauntCardPromoted = withPromotedLabel(RestrauntCard);
+
+  const { loggedInUser, setUserName } = useContext(UserContext);
 
   if (onlineStatus === false)
     return (
@@ -62,11 +66,23 @@ const Body = () => {
             Top Rated Restraunt
           </button>
         </div>
+        <div className="p-12">
+          <label>UserName : </label>
+          <input
+            className="border border-black p-1"
+            value={loggedInUser}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+        </div>
       </div>
       <div className="flex flex-wrap">
         {newResList.map((restraunt) => (
           <Link key={restraunt.info.id} to={"/restraunt/" + restraunt.info.id}>
-            <RestrauntCard resData={restraunt.info} />
+            {restraunt.info?.promoted ? (
+              <RestrauntCardPromoted resData={restraunt.info} />
+            ) : (
+              <RestrauntCard resData={restraunt.info} />
+            )}
           </Link>
         ))}
       </div>

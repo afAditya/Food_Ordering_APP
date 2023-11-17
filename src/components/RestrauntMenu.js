@@ -1,10 +1,22 @@
 import Shimmer from "./Shimmer";
 import { useParams } from "react-router-dom";
 import useRestrauntMenu from "../utils/useRestrauntMenu";
+import RestrauntCategory from "./RestrauntCategory";
+import { useState } from "react";
 
 const RestrauntMenu = () => {
   const { resID } = useParams();
   const resInfo = useRestrauntMenu(resID);
+
+  const [showIndex, setShowIndex] = useState(0);
+
+  const handleShowIndex = (index) => {
+    if (index === showIndex) {
+      setShowIndex(null);
+    } else {
+      setShowIndex(index);
+    }
+  };
 
   if (resInfo === null) return <Shimmer />;
 
@@ -13,23 +25,33 @@ const RestrauntMenu = () => {
 
   const { itemCards } =
     resInfo.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card?.card;
-  console.log(itemCards);
+
+  const categories =
+    resInfo.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter(
+      (c) =>
+        c.card?.card?.["@type"] ===
+        "type.googleapis.com/swiggy.presentation.food.v2.NestedItemCategory"
+    );
+
+  // console.log(categories[0]);
 
   return (
-    <div className="restraunt-menu">
-      <h1>{name}</h1>
-      <p>
+    <div className="text-center">
+      <h1 className="font-bold my-5 text-2xl">{name}</h1>
+      <p className="font-bold text-lg">
         {costForTwoMessage} - {cuisines.join(", ")}
       </p>
-      <ul>
-        {itemCards?.map((itemCard) => (
-          <li key={itemCard.card.info.id}>
-            {itemCard.card.info.name} - {"Rs. "}
-            {itemCard.card.info.price / 100 ||
-              itemCard.card.info.defaultPrice / 100}
-          </li>
-        ))}
-      </ul>
+
+      {/* only starter is being displayed currently */}
+      {categories[0]?.card?.card?.categories.map((category, index) => (
+        <RestrauntCategory
+          key={category.title}
+          data={category}
+          showItems={index === showIndex ? true : false}
+          index={index}
+          setShowIndex={handleShowIndex}
+        />
+      ))}
     </div>
   );
 };

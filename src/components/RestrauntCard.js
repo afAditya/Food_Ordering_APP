@@ -3,7 +3,7 @@ const RestrauntCard = (props) => {
   const { cloudinaryImageId, name, cuisines, avgRating, costForTwo } = resData;
   return (
     <div
-      className="w-[300px] p-4 mt-4 mb-3 ml-3 rounded-lg"
+      className="w-[300px] p-4 mt-4 mb-3 ml-3 rounded-lg "
       style={{ backgroundColor: "#f0f0f0" }}
     >
       <img
@@ -20,6 +20,20 @@ const RestrauntCard = (props) => {
       <h4>{costForTwo}</h4>
     </div>
   );
+};
+
+export const withPromotedLabel = (RestrauntCard) => {
+  return (props) => {
+    return (
+      <div>
+        <label className="absolute bg-black text-white m-2 p-2 rounded-lg">
+          {" "}
+          Promoted
+        </label>
+        <RestrauntCard {...props} />
+      </div>
+    );
+  };
 };
 
 export default RestrauntCard;
